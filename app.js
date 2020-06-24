@@ -1,6 +1,8 @@
 // Importing mongodb to have an instance available as an object
 const MongoClient = require('mongodb').MongoClient;
 
+const assert = require('assert');
+
 const circulationRepo = require('./repos/circulationRepo');
 const data = require('./circulation.json');
 
@@ -19,13 +21,17 @@ async function main() {
 	// Loading the file with the CRUD operations to follow along
 	const results = await circulationRepo.loadData(data);
 	// results.ops shows the actual data being pulled from the collection
-	console.log(results.insertCount, results.ops);
+	assert.equal(data.length, results.insertedCount);
 
 	// Admin class in an internal class that allows convenient
 	// access to the admin functionality and commands for MongoDB
 	const admin = client.db(dbName).admin();
-	console.log(await admin.serverStatus());
+
+	// Will drop the database to prevent the database from overpopulating with the same insert procedure
+	await client.db(dbName).dropDatabase();
 	console.log(await admin.listDatabases());
+
+	client.close();
 
 }
 
