@@ -18,21 +18,29 @@ async function main() {
 	const client = new MongoClient(url);
 	await client.connect();
 
-	// Loading the file with the CRUD operations to follow along
-	const results = await circulationRepo.loadData(data);
-	// results.ops shows the actual data being pulled from the collection
-	assert.equal(data.length, results.insertedCount);
+	try {
+		// Loading the file with the CRUD operations to follow along
+        	const results = await circulationRepo.loadData(data);
+        	// results.ops shows the actual data being pulled from the collection
+        	assert.equal(data.length, results.insertedCount);
 
-	// Admin class in an internal class that allows convenient
-	// access to the admin functionality and commands for MongoDB
-	const admin = client.db(dbName).admin();
+        	// Method from the circulation method to execute the GET CRUD procedure
+        	const getData = await circulationRepo.get();
+        	// results.ops shows the actual data being pulled from the collection
+        	assert.equal(data.length, results.insertedCount);
+	} catch (error) {
+		console.log(error);
+	} finally {
+		// Admin class in an internal class that allows convenient
+        	// access to the admin functionality and commands for MongoDB
+        	const admin = client.db(dbName).admin();
 
-	// Will drop the database to prevent the database from overpopulating with the same insert procedure
-	await client.db(dbName).dropDatabase();
-	console.log(await admin.listDatabases());
+        	// Will drop the database to prevent the database from overpopulating with the same insert procedure
+        	await client.db(dbName).dropDatabase();
+        	console.log(await admin.listDatabases());
 
-	client.close();
-
+        	client.close();
+	}
 }
 
 main();
